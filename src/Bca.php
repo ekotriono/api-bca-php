@@ -264,32 +264,29 @@ class Bca
         $accessToken = self::setAccessToken($accessToken);
 
         //request data
-        $amount = isset($request['amount']) ? $request['amount'] : null;
-        $beneficiaryAccountNumber = isset($request['beneficiaryAccountNumber']) ? $request['beneficiaryAccountNumber'] : null;
-        $beneficiaryBankCode = isset($request['beneficiaryBankCode']) ? $request['beneficiaryBankCode'] : null;
-        $beneficiaryCustType = isset($request['beneficiaryCustType']) ? $request['beneficiaryCustType'] : null;
-        $beneficiaryCustResidence = isset($request['beneficiaryCustResidence']) ? $request['beneficiaryCustResidence'] : null;
-        $beneficiaryName = isset($request['beneficiaryName']) ? $request['beneficiaryName'] : null;
-        $referenceId = isset($request['referenceId']) ? $request['referenceId'] : null;
-        $remark1 = isset($request['remark1']) ? $request['remark1'] : null;
-        $remark2 = isset($request['remark2']) ? $request['remark2'] : null;
-        $sourceAccountNumber = isset($request['sourceAccountNumber']) ? $request['sourceAccountNumber'] : null;
-        $transferType = isset($request['transferType']) ? $request['transferType'] : null;
-        $transactionID = isset($request['transactionID']) ? $request['transactionID'] : null;
-        
+        $structureRequestData = [
+            'Amount',
+            'BeneficiaryAccountNumber',
+            'BeneficiaryBankCode',
+            'BeneficiaryCustType',
+            'BeneficiaryCustResidence',
+            'BeneficiaryName',
+            'ReferenceID',
+            'Remark1',
+            'Remark2',
+            'SourceAccountNumber',
+            'TransferType',
+            'TransactionID'
+        ];
         //body data
-        $body = array(
-            'Amount' => $amount,
-            'BeneficiaryAccountNumber' => strtolower(trim($beneficiaryAccountNumber)),
-            'CorporateID' => self::$config['corporate_id'],
-            'CurrencyCode' => self::$config['currency_code'],
-            'ReferenceID' => $referenceId,
-            'Remark1' => $remark1,
-            'Remark2' => $remark2,
-            'SourceAccountNumber' => strtolower(trim($SourceAccountNumber)),
-            'TransactionDate' => self::$timeStamp,
-            'TransactionID' => $transactionID
-        );
+        $body = array();
+        $body['CorporateID'] = self::$config['corporate_id'];
+        $body['CurrencyCode'] = self::$config['currency_code'];
+        $body['TransactionDate'] = isset($request['TransactionDate']) ? $request['TransactionDate'] : self::$timeStamp;
+        foreach ($structureRequestData as $index ) 
+        {
+            $body[$index] = isset($request[$index]) ? $request[$index] : null;
+        }
         ksort($body);
         $body = json_encode($body, JSON_UNESCAPED_SLASHES);
 
@@ -300,8 +297,8 @@ class Bca
         //headers
         $headers = array(
             "Accept:application/json",
-            "ChannelID:" . isset($request['channelId']) ? $request['channelId'] : null,
-            "CredentialID:" . isset($request['credentialID']) ? $request['credentialID'] : null,
+            "ChannelID:" . (isset($request['ChannelID']) && $request['ChannelID'] ? $request['ChannelID'] : ''),
+            "CredentialID:" . (isset($request['CredentialID']) && $request['CredentialID'] ? $request['CredentialID'] : ''),
             "Content-Type:application/json",
             "Authorization:Bearer $accessToken",
             "Origin:" . self::$config['domain'],

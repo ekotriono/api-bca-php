@@ -59,7 +59,7 @@ class Bca
         curl_close($ci);  
 
         if ($error) {
-            throw new Exception($error);
+            throw new \Exception($error);
         }
 
         return $output;
